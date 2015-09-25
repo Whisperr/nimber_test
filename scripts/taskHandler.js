@@ -2,11 +2,9 @@
  * @constructor
  */
 main.taskHandler = function() {
-    this.viewPosition = ko.observable();
-
+    this.iconFrom = 'static/imgs/icon-marker-a_2x.png';
+    this.iconTo = 'static/imgs/icon-marker-b@2x.png';
     this.map = null;
-    this.markers = [];
-    this.serverResponse = [];
     this.tasks = ko.observableArray([]);
     this.selectedTask = ko.observable();
 }
@@ -17,18 +15,26 @@ main.taskHandler = function() {
 main.taskHandler.prototype.init = function() {
     var  _mapOptions = {
             zoom: 4,
-            center: this.viewPosition(),
+            center: null,
             gridSize: 50,
             maxZoom: 20,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         },
         _canvas = document.getElementById('map-canvas');
 
-    this.map = new google.maps.Map(_canvas, _mapOptions);
+    this.getTasks()
+        .done(function(){
+            this.createTasks();
 
-    this.track();
+            _mapOptions.center = this.getPosition(this.tasks()[0].locationFrom.lat, this.tasks()[0].locationFrom.lng);
+            this.map = new google.maps.Map(_canvas, _mapOptions);
 
-    ko.applyBindings(this);
+            this.selectedTask(this.tasks()[0]);
+            this.getDirections(this.selectedTask().locationFrom, this.selectedTask().locationTo);
+
+            ko.applyBindings(this);
+        }.bind(this));
+
 }
 
 
@@ -51,116 +57,79 @@ main.taskHandler.prototype.getCoordsFromAddress = function(address) {
 
 }
 
-/**
- * set selected store
- */
-main.taskHandler.prototype.selectStore = function(task) {
-    this.selectedTask(task);
+main.taskHandler.prototype.getNextTask = function() {
+    var _next = this.selectTask().index + 1,
+        _index = _next === 0 ? this.tasks().length : _next;
+
+    this.selectTask(_index);
+}
+
+main.taskHandler.prototype.getPrevTask = function() {
+    var _prev = this.selectTask().index - 1,
+        _index = _prev < 0 ? this.tasks().length : _prev;
+
+    this.selectTask(_index);
+}
+
+main.taskHandler.prototype.selectTask = function(index) {
+    this.selectedTask(this.tasks()[index]);
 }
 
 /**
  * track is responsible for centering the user when moving
  * notified by coordinates and map initialized
  */
-main.taskHandler.prototype.track = function() {
-    $.get('tasks.json')
+main.taskHandler.prototype.getTasks = function() {
+    return $.get('tasks.json')
         .done(function(resp) {
-            this.serverResponse = eval(resp);
-            //set extra info that are needed in the
-            this.getListInfo();
+            this.tasks(eval(resp));
         }.bind(this));
 }
 
 /**
- * Remove all stores from them map.
+ * create tasks
  */
-main.taskHandler.prototype.getListInfo = function() {
+main.taskHandler.prototype.createTasks = function() {
     var _taskFrom,
-        _taskFromPosition,
         _taskTo,
-        _taskToPosition,
-        _data,
-        _tempArray = [],
-        _tempTask;
+        _data;
 
-    /**
-     * fill stores arrays (for displaying stores list)
-     * and markers array
-     */
-    this.serverResponse.forEach(function (task) {
-        _taskFrom = this.getCoordsFromAddress(task.Picked_up_from);
-        _taskTo = this.getCoordsFromAddress(task.Delivered_to);
+    this.tasks().forEach(function (task, index) {
+        _taskFrom = this.getPosition(task.locationFrom.lat, task.locationFrom.lng);
+        _taskTo = this.getPosition(task.locationTo.lat, task.locationTo.lng);
         _data = task;
-
-        _taskFrom.done(function(resp) {
-            console.log(resp);
-            _taskFromPosition = resp.results[0].geometry.location;
-        });
-
-        _taskTo.done(function(resp) {
-            _taskToPosition = resp.results[0].geometry.location;
-        });
-
-        $.when(_taskFrom, _taskTo)
-            .done(function(){
-                _data.distance = this.calcDistance(_taskFrom, _taskTo) + 'km';
-                _tempTask = new main.Task(_data);
-                _tempArray.push(_tempTask);
-                new google.maps.Marker({
-                    position: _taskFromPosition,
-                    title: task.description,
-                    map: this.map,
-                    icon: this.defaultIcon
-                });
-                new google.maps.Marker({
-                    position: _taskFromPosition,
-                    title: task.description,
-                    map: this.map,
-                    icon: this.defaultIcon
-                });
-            }.bind(this));
-
+        _data.locationFrom = _taskFrom;
+        _data.locationTo = _taskTo;
+        _data.index = index;
+        _data.distance = this.calcDistance(_taskFrom, _taskTo) + 'km';
     }, this);
 
-    this.tasks(_tempArray);
-}
-
-/**
- * @param data
- * @constructor
- */
-main.Task = function(data) {
-    for(var key in data){
-        this[key] = data[key];
-    }
-}
+};
 
 
 /**
  * Get directions to the store
  * from your current location
  */
-main.taskHandler.prototype.getDirections = function() {
-    var _currentPos = this.currentPos,
-        _panel = document.getElementById('directions-panel'),
-        _storePos = this.position,
-        _directionsService = new google.maps.DirectionsService(),
+main.taskHandler.prototype.getDirections = function(pos1, pos2) {
+    var _directionsService = new google.maps.DirectionsService(),
         _directionsDisplay = new google.maps.DirectionsRenderer(),
         _request = {
-            origin: _currentPos,
-            destination: _storePos,
+            origin: pos1,
+            destination: pos2,
             travelMode: google.maps.TravelMode.DRIVING
         };
-    //clear panel before initializing google directions
-    _directionsDisplay.setPanel(_panel);
+
+    _directionsDisplay = new google.maps.DirectionsRenderer({
+        polylineOptions: {
+            strokeColor: "#d67770"
+        }
+    });
+    _directionsDisplay.setMap(this.map);
 
     _directionsService.route(_request, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             _directionsDisplay.setDirections(response);
-            //todo: create function in app
-            $('html, body').stop().animate({
-                scrollTop: $(_panel).offset().top
-            }, 500, 'linear');
         }
     });
 }

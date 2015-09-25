@@ -1,40 +1,74 @@
 [
   {
-    "id": 114349,
+    "id": "task1",
+    "name": "Large Cupboard",
     "size": "This fits in a trailer",
     "delivered_by": "Today, 24 September",
     "Description": "Must be picked up by the 24th, cannot be delivered after the 28th. I hope someone can help store it for a couple days.",
     "Picked_up_from": "E8 London",
     "Delivered_to": "SE1 1ER London",
     "reward": "40 GBP",
-    "lat": ,
-    "lng":
+    "locationFrom": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    },
+    "locationTo": {
+      "lat": 51.5028538,
+      "lng": -0.0957069
+    }
   },
   {
-    "id": 114349,
+    "id": "task2",
+    "name": "2 boxes of fabric",
     "size": "This fits in a trailer",
     "delivered_by": "Today, 24 September",
     "Description": "Must be picked up by the 24th, cannot be delivered after the 28th. I hope someone can help store it for a couple days.",
     "Picked_up_from": "E8 London",
     "Delivered_to": "SE1 1ER London",
-    "reward": "40 GBP"
+    "reward": "40 GBP",
+    "locationFrom": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    },
+    "locationTo": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    }
   },
   {
     "id": 114349,
+    "name": "Large Cupboard",
     "size": "This fits in a trailer",
     "delivered_by": "Today, 24 September",
     "Description": "Must be picked up by the 24th, cannot be delivered after the 28th. I hope someone can help store it for a couple days.",
     "Picked_up_from": "E8 London",
     "Delivered_to": "SE1 1ER London",
-    "reward": "40 GBP"
+    "reward": "40 GBP",
+    "locationFrom": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    },
+    "locationTo": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    }
   },
   {
     "id": 114349,
+    "name": "Large Cupboard",
     "size": "This fits in a trailer",
     "delivered_by": "Today, 24 September",
     "Description": "Must be picked up by the 24th, cannot be delivered after the 28th. I hope someone can help store it for a couple days.",
     "Picked_up_from": "E8 London",
     "Delivered_to": "SE1 1ER London",
-    "reward": "40 GBP"
+    "reward": "40 GBP",
+    "locationFrom": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    },
+    "locationTo": {
+      "lat": 51.5412774,
+      "lng": -0.0646194
+    }
   }
 ]

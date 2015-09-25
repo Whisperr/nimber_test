@@ -6,13 +6,9 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
   <link rel="shortcut icon" href="/favicon.ico">
-  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-  <!-- build:css(.) styles/vendor.css -->
-  <!-- bower:css -->
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-  <!-- endbower -->
-  <!-- endbuild -->
-  <!-- build:css(.tmp) styles/main.css -->
+
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild -->
 </head>
@@ -23,14 +19,21 @@
   <!-- TEMPLATE START -->
   <div class="view">
     <!-- map -->
-    <div id="map">
+    <section id="map">
       <div id="map-canvas"></div>
-    </div>
+    </section>
     <!-- map end -->
     <!-- task list-->
-    <div>
-    </div>
-    <!-- store list end-->
+    <section class="taskCard" data-bind="with: selectedTask()">
+      <div class="item">
+        <h3 data-bind="text: name"></h3>
+      </div>
+      <div class="navigation">
+        <span class="arrow left" data-bind="click: $root.getPrevTask.bind($root)"></span>
+        <span class="arrow right" data-bind="click: $root.getNextTask.bind($root)"></span>
+      </div>
+    <!-- task list end-->
+    </section>
   </div>
   <!-- TEMPLATE END -->
 
